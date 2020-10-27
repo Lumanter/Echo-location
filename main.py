@@ -1,10 +1,8 @@
 import pygame
-import math
 from point import Point
 from sonar import Sonar
 from line_segment import LineSegment
-from vector_utilities import *
-
+from unit_vector import UnitVector
 
 screen_width = 500
 screen_height = 500
@@ -13,16 +11,21 @@ center_point = Point(int(screen_width / 2), int(screen_height / 2))
 
 sonar_line = LineSegment((0,0),(0,0))
 sonar = Sonar(center_point)
-wall_line_segment = LineSegment(Point(100, 350), Point(400, 350))
-sonar_wall_intersection = None
+
+line_segments = [LineSegment(Point(100, 50), Point(400, 50)), LineSegment(Point(100, 450), Point(400, 450)), LineSegment(Point(50, 100), Point(50, 400)), LineSegment(Point(450, 100), Point(450, 400))]
+reflected_vectors = [None] * 4
 
 def redraw_window():
     window.fill((5, 5, 5))
     sonar.draw(window)
     sonar_line.draw(window, (255, 255, 255))
-    wall_line_segment.draw(window, (63, 193, 201))
-    if sonar_wall_intersection:
-        sonar_wall_intersection.draw(window, (255, 255, 255), 4)
+
+    for line in line_segments:
+        line.draw(window, (255, 255, 255))
+
+    for vector in reflected_vectors:
+        if vector is not None:
+            vector.draw(window, 30, (255, 51, 153))
     pygame.display.update()
 
 run = True
@@ -37,8 +40,9 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-                direction_vector = mouse_point - center_point
-                angle = find_angle(center_point, mouse_point) * (180 / math.pi)
-                print(angle)
-                sonar_wall_intersection = ray_segment_intersection_point(center_point, direction_vector, wall_line_segment.pointB, wall_line_segment.pointA)
-                #print(intersection)
+                ray_vector = UnitVector(center_point, center_point.get_angle_to(mouse_point))
+                for index, line_segment in enumerate(line_segments):
+                    reflection_point = line_segment.intersects(ray_vector)
+                    if reflection_point is not None:
+                        reflected_vectors[index] = line_segment.get_reflected_vector(reflection_point, ray_vector)
+

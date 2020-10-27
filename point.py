@@ -1,4 +1,5 @@
 import pygame
+import math
 
 class Point:
     def __init__(self, x, y):
@@ -14,20 +15,26 @@ class Point:
     def __truediv__(self, other):
         return Point(self.x / other, self.y / other)
 
-    def dot(self, p2):
-        return (self.x * p2.x) + (self.y * p2.y)
+    def dot_product(self, other):
+        return (self.x * other.x) + (self.y * other.y)
 
-    def cross(self, p2):
-        return (self.x * p2.y) - (self.y * p2.x)
+    def cross_product(self, other):
+        return (self.x * other.y) - (self.y * other.x)
+
+    def get_angle_to(self, other):
+        angle = math.atan2(other.y - self.y, other.x - self.x)
+        if angle < 0:
+            angle += math.pi * 2
+        return angle
 
     def get_tuple(self):
         return int(self.x), int(self.y)
 
     def __str__(self):
-        return str(self.get_tuple())
+        return str((self.x, self.y))
 
     def __repr__(self):
         return self.__str__()
 
-    def draw(self, window, color=(0, 0, 0), radius=4):
+    def draw(self, window, color=(255, 255, 255), radius=4):
         pygame.draw.circle(window, color, self.get_tuple(), radius)
