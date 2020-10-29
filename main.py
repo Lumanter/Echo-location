@@ -44,5 +44,8 @@ while run:
                 for index, line_segment in enumerate(line_segments):
                     reflection_point = line_segment.intersects(ray_vector)
                     if reflection_point is not None:
-                        reflected_vectors[index] = line_segment.get_reflected_vector(reflection_point, ray_vector)
+                        v= line_segment.get_reflected_vector(reflection_point, ray_vector)
+                        reflected_vectors[index] =v
+                        sonar.sonar_collision(v)
+
 

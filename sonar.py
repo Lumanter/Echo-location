@@ -1,6 +1,10 @@
 import pygame
 from math import cos, sin, radians, pi
 from point import Point
+from unit_vector import UnitVector
+import numpy as np
+
+
 
 class Sonar:
     def __init__(self, center_point, radius=12):
@@ -33,3 +37,15 @@ class Sonar:
 
     def draw(self, window):
         pygame.draw.polygon(window, (245, 245, 245), self.triangle_points)
+    
+    def sonar_collision(self,vector):
+
+        vector_ori_c=self.center_point.__sub__(vector.get_origin_point())
+        point_closest = vector.projection(vector_ori_c)
+        
+        dis=self.center_point.get_distance_to(point_closest)
+
+        if dis>self.radius:
+            return None
+        else:
+            return point_closest

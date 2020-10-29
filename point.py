@@ -26,6 +26,8 @@ class Point:
         if angle < 0:
             angle += math.pi * 2
         return angle
+    def get_distance_to(self,other):
+        return math.sqrt((self.x - other.get_x())**2+(self.y - other.get_y())**2)
 
     def get_tuple(self):
         return int(self.x), int(self.y)
@@ -35,6 +37,12 @@ class Point:
 
     def __repr__(self):
         return self.__str__()
+        
+    def get_x(self):
+        return self.x
+
+    def get_y(self):
+        return self.y
 
     def draw(self, window, color=(255, 255, 255), radius=4):
         pygame.draw.circle(window, color, self.get_tuple(), radius)
