@@ -46,6 +46,8 @@ class Sonar:
         dis=self.center_point.get_distance_to(point_closest)
 
         if dis>self.radius:
-            return None
+            
+            return False
         else:
-            return point_closest
+            print("collision")
+            return True
