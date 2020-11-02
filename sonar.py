@@ -6,20 +6,36 @@ import numpy as np
 from angle_range import AngleRange
 
 class Sonar:
+    """ Sonar that emits sound rays.
+
+        Attributes:
+            center_point(:obj:`Point`): Sonar center point.
+            radius(int): Sonar radius used for display and collision detection.
+            view_angle(int): Sonar view angle, used when sound rays are emitted.
+            triangle_points(:obj:`list` of :obj:`list`): Sonar triangle points used for display.
+    """
     def __init__(self, center_point, radius=12, view_angle_range=radians(60)):
         self.center_point = center_point
         self.radius = radius
+        self.view_angle = view_angle_range
         self.triangle_points = None
         self.rotation_angle = 0
         self.update_triangle_points()
-        self.view_angle = view_angle_range
+
 
     def update_rotation(self, mouse_point):
+        """ Updates the sonar rotation.
+
+            Args:
+                mouse_point(:obj:`Point`): Mouse click point.
+        """
         self.rotation_angle = self.center_point.get_angle_to(mouse_point)
         self.update_triangle_points()
 
 
     def update_triangle_points(self):
+        """ Updates the rotation of the sonar triangle points.
+        """
         pivot = self.get_coordinates_around_center(self.rotation_angle, self.radius)
         left_point = self.get_coordinates_around_center(self.rotation_angle + radians(135), self.radius)
         right_point = self.get_coordinates_around_center(self.rotation_angle + radians(225), self.radius)
@@ -27,6 +43,15 @@ class Sonar:
 
 
     def get_coordinates_around_center(self, angle, distance):
+        """ Returns the x,y coordinates around the sonar center from a given angle and distance.
+
+            Args:
+                angle(float): Rotation value from the sonar perspective.
+                distance(int): Distance from the sonar to the coordinates.
+
+            Returns:
+                :obj:`list` of float: Tuple of coordinates.
+        """
         center = self.center_point
         point = Point(center.x+distance, center.y) # initial point to rotate
         x = center.x + cos(angle) * (point.x - center.x) - sin(angle) * (point.y - center.y)
@@ -34,7 +59,7 @@ class Sonar:
         return x, y
 
 
-    def sonar_collision(self,vector):
+    def sonar_collision(self, vector):
         vector_ori_c=self.center_point.__sub__(vector.get_origin_point())
         point_closest = vector.projection(vector_ori_c)
         dis=self.center_point.get_distance_to(point_closest)

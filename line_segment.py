@@ -111,7 +111,7 @@ class LineSegment:
                 window(:obj:`Surface`:): Pygame window surface.
                 color(:obj:`List`:): Line color as list of rgb colors.
         """
-        pygame.draw.line(window, color, self.pointA.get_tuple(), self.pointB.get_tuple())
+        pygame.draw.line(window, color, self.pointA.get_int_tuple(), self.pointB.get_int_tuple())
 
 
     def __repr__(self):
