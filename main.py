@@ -1,4 +1,5 @@
 import pygame
+import math
 from point import Point
 from sonar import Sonar
 from line_segment import LineSegment
@@ -42,10 +43,17 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
                 ray_vector = UnitVector(center_point, center_point.get_angle_to(mouse_point))
                 for index, line_segment in enumerate(line_segments):
-                    reflection_point = line_segment.intersects(ray_vector)
+
+                    reflection_point = line_segment.get_intersection_point(ray_vector)
                     if reflection_point is not None:
-                        v= line_segment.get_reflected_vector(reflection_point, ray_vector)
-                        reflected_vectors[index] =v
-                        sonar.sonar_collision(v)
+                        reflected_vector= line_segment.get_reflected_vector(reflection_point, ray_vector)
+                        reflected_vectors[index] =reflected_vector
+
+                        sonar.sonar_collision(reflected_vector) # test stuff
+                        angle_range = line_segment.get_reflection_angle_range(reflection_point, ray_vector)
+                        print("Reflection angle range: (", math.degrees(angle_range.min), ", ", math.degrees(angle_range.max), ")")
+
+                        sonar_view_angle_range = sonar.get_view_angle_range()
+                        print("Sonar view angle range: (", math.degrees(sonar_view_angle_range.min), ", ", math.degrees(sonar_view_angle_range.max), ")")
 
 
