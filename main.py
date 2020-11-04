@@ -10,16 +10,15 @@ screen_height = 500
 window = pygame.display.set_mode((screen_width, screen_height))
 center_point = Point(int(screen_width / 2), int(screen_height / 2))
 
-sonar_line = LineSegment((0,0),(0,0))
 sonar = Sonar(center_point)
 
 line_segments = [LineSegment(Point(100, 50), Point(400, 50)), LineSegment(Point(100, 450), Point(400, 450)), LineSegment(Point(50, 100), Point(50, 400)), LineSegment(Point(450, 100), Point(450, 400))]
 reflected_vectors = [None] * 4
 
+
 def redraw_window():
     window.fill((5, 5, 5))
     sonar.draw(window)
-    sonar_line.draw(window, (255, 255, 255))
 
     for line in line_segments:
         line.draw(window, (255, 255, 255))
@@ -29,11 +28,11 @@ def redraw_window():
             vector.draw(window, 30, (255, 51, 153))
     pygame.display.update()
 
+
 run = True
 while run:
     mouse_point = Point(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
     sonar.update_rotation(mouse_point)
-    sonar_line = LineSegment(center_point, mouse_point)
 
     redraw_window()
 

@@ -4,6 +4,7 @@ from point import Point
 from unit_vector import UnitVector
 import numpy as np
 from angle_range import AngleRange
+from line_segment import LineSegment
 
 class Sonar:
     """ Sonar that emits sound rays.
@@ -13,14 +14,20 @@ class Sonar:
             radius(int): Sonar radius used for display and collision detection.
             view_angle(int): Sonar view angle, used when sound rays are emitted.
             triangle_points(:obj:`list` of :obj:`list`): Sonar triangle points used for display.
+            field_of_view_points(:obj:`list` of :obj:`list`): Sonar field of view points used for display.
+            view_line(:obj:`LineSegment`): Sonar view line.
     """
-    def __init__(self, center_point, radius=12, view_angle_range=radians(60)):
+    def __init__(self, center_point, radius=12, view_angle_range=radians(80)):
         self.center_point = center_point
         self.radius = radius
         self.view_angle = view_angle_range
+
         self.triangle_points = None
         self.rotation_angle = 0
         self.update_triangle_points()
+        self.field_of_view_points = None
+        self.update_field_of_view_points()
+        self.view_line = LineSegment(self.center_point, self.center_point)
 
 
     def update_rotation(self, mouse_point):
@@ -30,7 +37,9 @@ class Sonar:
                 mouse_point(:obj:`Point`): Mouse click point.
         """
         self.rotation_angle = self.center_point.get_angle_to(mouse_point)
+        self.view_line.pointB = mouse_point
         self.update_triangle_points()
+        self.update_field_of_view_points()
 
 
     def update_triangle_points(self):
@@ -40,6 +49,18 @@ class Sonar:
         left_point = self.get_coordinates_around_center(self.rotation_angle + radians(135), self.radius)
         right_point = self.get_coordinates_around_center(self.rotation_angle + radians(225), self.radius)
         self.triangle_points = (pivot, left_point, right_point)
+
+
+    def update_field_of_view_points(self):
+        left_angle = self.rotation_angle + (self.view_angle/2)
+        left_angle = (left_angle - radians(360)) if (degrees(left_angle) > 360) else left_angle  # adjust over 360 angle
+        right_angle = self.rotation_angle - (self.view_angle / 2)
+        right_angle = (right_angle + radians(360)) if (right_angle < 0) else right_angle # adjust negative angle
+
+        field_of_view_length = self.radius + 25
+        left_view_point = self.get_coordinates_around_center(left_angle, field_of_view_length)
+        right_view_point = self.get_coordinates_around_center(right_angle, field_of_view_length)
+        self.field_of_view_points = (self.center_point.get_int_tuple(), left_view_point, right_view_point)
 
 
     def get_coordinates_around_center(self, angle, distance):
@@ -95,4 +116,7 @@ class Sonar:
             Args:
                 window(:obj:`Surface`:): Pygame window surface.
         """
-        pygame.draw.polygon(window, (245, 245, 245), self.triangle_points)
+        dark_grey = (45, 45, 45)
+        self.view_line.draw(window, dark_grey) # draw view line
+        pygame.draw.polygon(window, dark_grey, self.field_of_view_points) # draw field of view
+        pygame.draw.polygon(window, (245, 245, 245), self.triangle_points) # draw triangle sonar
