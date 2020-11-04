@@ -85,11 +85,7 @@ class Sonar:
         point_closest = vector.projection(vector_ori_c)
         dis=self.center_point.get_distance_to(point_closest)
 
-        if dis>self.radius:
-            return False
-        else:
-            print("collision")
-            return True
+        return dis<self.radius
 
 
     def get_view_angle_range(self):

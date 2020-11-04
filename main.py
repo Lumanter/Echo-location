@@ -4,6 +4,8 @@ from point import Point
 from sonar import Sonar
 from line_segment import LineSegment
 from unit_vector import UnitVector
+from monter_ray_generator import MonterRayGenerator
+from ray import Ray
 
 screen_width = 500
 screen_height = 500
@@ -54,5 +56,11 @@ while run:
 
                         sonar_view_angle_range = sonar.get_view_angle_range()
                         print("Sonar view angle range: (", math.degrees(sonar_view_angle_range.min), ", ", math.degrees(sonar_view_angle_range.max), ")")
-
+                         
+                        monte=MonterRayGenerator()
+                        initial_rays=monte.get_initial_sonar_rays(sonar.center_point,sonar_view_angle_range)
+                        print("Rayo principal: ")
+                        initial_rays[0].__str__()
+                        print("Rayos de foco: ")
+                        monte.get_spotlight_rays(initial_rays[0],0)
 
