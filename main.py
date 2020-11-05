@@ -42,6 +42,8 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
+            
+            
                 ray_vector = UnitVector(center_point, center_point.get_angle_to(mouse_point))
                 for index, line_segment in enumerate(line_segments):
 
@@ -63,4 +65,5 @@ while run:
                         initial_rays[0].__str__()
                         print("Rayos de foco: ")
                         monte.get_spotlight_rays(initial_rays[0],0)
+
 
