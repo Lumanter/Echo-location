@@ -52,6 +52,8 @@ class Sonar:
 
 
     def update_field_of_view_points(self):
+        """ Updates the rotation of the sonar field of view points.
+        """
         left_angle = self.rotation_angle + (self.view_angle/2)
         left_angle = (left_angle - radians(360)) if (degrees(left_angle) > 360) else left_angle  # adjust over 360 angle
         right_angle = self.rotation_angle - (self.view_angle / 2)
