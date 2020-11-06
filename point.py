@@ -5,8 +5,8 @@ class Point:
     """ Point representation.
 
         Attributes:
-            x(float): X axis point.
-            y(float): Y axis point.
+            x (float): X axis point.
+            y (float): Y axis point.
     """
     def __init__(self, x, y):
         self.x = x
@@ -17,7 +17,7 @@ class Point:
         """ Returns the angle to another point.
 
             Args:
-                point(:obj:`Point`): Another point.
+                point (:obj:`Point`): Another point.
 
             Returns:
                 float: Angle to the other point.
@@ -32,7 +32,7 @@ class Point:
         """ Returns the distance to another point.
 
             Args:
-                point(:obj:`Point`): Another point.
+                point (:obj:`Point`): Another point.
 
             Returns:
                 float: Distance to the other point.
@@ -53,7 +53,7 @@ class Point:
         """ Returns the dot product between this point and another.
 
             Args:
-                point(:obj:`Point`): Another point.
+                point (:obj:`Point`): Another point.
 
             Returns:
                 float: Dot product result.
@@ -65,7 +65,7 @@ class Point:
         """ Returns the cross product between this point and another.
 
             Args:
-                point(:obj:`Point`): Another point.
+                point (:obj:`Point`): Another point.
 
             Returns:
                 float: Cross product result.
@@ -96,9 +96,9 @@ class Point:
         """ Draws the point in the pygame game window.
 
             Args:
-                window(:obj:`Surface`:): Pygame window surface.
-                radius(int): Point display radius.
-                color(:obj:`List`:): Line color as list of rgb colors.
+                window (:obj:`Surface`:): Pygame window surface.
+                radius (int): Point display radius.
+                color (:obj:`List`:): Line color as list of rgb colors.
         """
         pygame.draw.circle(window, color, self.get_int_tuple(), radius)
 

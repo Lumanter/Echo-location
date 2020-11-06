@@ -10,12 +10,12 @@ class Sonar:
     """ Sonar that emits sound rays.
 
         Attributes:
-            center_point(:obj:`Point`): Sonar center point.
-            radius(int): Sonar radius used for display and collision detection.
-            view_angle(int): Sonar view angle, used when sound rays are emitted.
-            triangle_points(:obj:`list` of :obj:`list`): Sonar triangle points used for display.
-            field_of_view_points(:obj:`list` of :obj:`list`): Sonar field of view points used for display.
-            view_line(:obj:`LineSegment`): Sonar view line.
+            center_point (:obj:`Point`): Sonar center point.
+            radius (int): Sonar radius used for display and collision detection.
+            view_angle (int): Sonar view angle, used when sound rays are emitted.
+            triangle_points (:obj:`list` of :obj:`list`): Sonar triangle points used for display.
+            field_of_view_points (:obj:`list` of :obj:`list`): Sonar field of view points used for display.
+            view_line (:obj:`LineSegment`): Sonar view line.
     """
     def __init__(self, center_point, radius = 15, view_angle_range = radians(60)):
         self.center_point = center_point
@@ -34,7 +34,7 @@ class Sonar:
         """ Updates the sonar rotation.
 
             Args:
-                mouse_point(:obj:`Point`): Mouse click point.
+                mouse_point (:obj:`Point`): Mouse click point.
         """
         self.rotation_angle = self.center_point.get_angle_to(mouse_point)
         self.view_line.pointB = mouse_point
@@ -69,8 +69,8 @@ class Sonar:
         """ Returns the x,y coordinates around the sonar center from a given angle and distance.
 
             Args:
-                angle(float): Rotation value from the sonar perspective.
-                distance(int): Distance from the sonar to the coordinates.
+                angle (float): Rotation value from the sonar perspective.
+                distance (int): Distance from the sonar to the coordinates.
 
             Returns:
                 :obj:`list` of float: Tuple of coordinates.
@@ -113,7 +113,7 @@ class Sonar:
         """ Draws the sonar in the pygame game window.
 
             Args:
-                window(:obj:`Surface`:): Pygame window surface.
+                window (:obj:`Surface`:): Pygame window surface.
         """
         dark_grey = (45, 45, 45)
         self.view_line.draw(window, dark_grey) # draw view line

@@ -9,8 +9,8 @@ class LineSegment:
     """ Segment of a line.
 
         Attributes:
-            pointA(:obj:`Point`): First line point.
-            pointB(:obj:`Point`): Second line point.
+            pointA (:obj:`Point`): First line point.
+            pointB (:obj:`Point`): Second line point.
     """
     def __init__(self, pointA, pointB):
         self.pointA = pointA
@@ -21,7 +21,7 @@ class LineSegment:
         """ Returns the intersection point between the line and a given vector.
 
             Args:
-                vector(:obj:`UnitVector`): Vector to check intersection.
+                vector (:obj:`UnitVector`): Vector to check intersection.
 
             Returns:
                 :obj:`Point`: Intersection point if occurs intersection, None otherwise.
@@ -60,8 +60,8 @@ class LineSegment:
         """ Returns the reflected vector upon hitting the line segment at a given point.
 
             Args:
-                reflection_point(:obj:`Point`): Point of reflection on the line.
-                vector(:obj:`UnitVector`): Vector to be reflected vector.
+                reflection_point (:obj:`Point`): Point of reflection on the line.
+                vector (:obj:`UnitVector`): Vector to be reflected vector.
 
             Returns:
                 :obj:`UnitVector`: Reflected vector.
@@ -84,8 +84,8 @@ class LineSegment:
         """ Returns the range of angles that a vector can take upon hitting the line.
 
             Args:
-                reflection_point(:obj:`Point`): Point of reflection on the line.
-                vector(:obj:`UnitVector`): Vector to be reflected.
+                reflection_point (:obj:`Point`): Point of reflection on the line.
+                vector (:obj:`UnitVector`): Vector to be reflected.
 
             Returns:
                 :obj:`AngleRange`: Reflection range of angles.
@@ -109,8 +109,8 @@ class LineSegment:
         """ Returns the the nearest line segment intersected by a vector
 
             Args:
-                vector(:obj:`UnitVector`): Vector to be check intersection.
-                line_segments(:obj:`list` of :obj:`LineSegment`): List of segments to check intersections.
+                vector (:obj:`UnitVector`): Vector to be check intersection.
+                line_segments (:obj:`list` of :obj:`LineSegment`): List of segments to check intersections.
 
             Returns:
                 :obj:`LineSegment`: Nearest intersected line segment if there is intersection, None otherwise.
@@ -133,8 +133,8 @@ class LineSegment:
         """ Draws the line segment in the pygame game window.
 
             Args:
-                window(:obj:`Surface`:): Pygame window surface.
-                color(:obj:`List`:): Line color as list of rgb colors.
+                window (:obj:`Surface`:): Pygame window surface.
+                color (:obj:`List`:): Line color as list of rgb colors.
         """
         pygame.draw.line(window, color, self.pointA.get_int_tuple(), self.pointB.get_int_tuple())
 

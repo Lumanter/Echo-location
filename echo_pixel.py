@@ -5,8 +5,8 @@ class EchoPixel:
     """ Pixel that represents an echo of sound.
 
         Attributes:
-            display_point(:obj:`Point`): Point to display the pixel.
-            display_pixel(:obj:`Surface`:): Pygame surface of the pixel with transparency.
+            display_point (:obj:`Point`): Point to display the pixel.
+            display_pixel (:obj:`Surface`:): Pygame surface of the pixel with transparency.
     """
     def __init__(self, energy, display_point):
         self.display_point = display_point

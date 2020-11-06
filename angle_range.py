@@ -6,8 +6,8 @@ class AngleRange:
     """ Range of math angles in radians. Angles are in the [0, 2π] values.
 
         Attributes:
-            min(float): Minimum angle in the range, in radians.
-            max(float): Maximum angle in the range, in radians.
+            min (float): Minimum angle in the range, in radians.
+            max (float): Maximum angle in the range, in radians.
     """
     def __init__(self, min, max):
         self.min = min
@@ -18,7 +18,7 @@ class AngleRange:
         """ Indicates if an angle is contained in the angle range.
 
             Args:
-                angle(float): Board object instance with the current game state.
+                angle (float): Board object instance with the current game state.
 
             Returns:
                 bool: True if angle is contained, false otherwise.

@@ -7,9 +7,9 @@ class UnitVector:
     """ Unit vector representation.
 
         Attributes:
-            origin_point(:obj:`Point`): Vector origin point.
-            angle(float): Vector angle from the origin point, in radians.
-            direction_vector(:obj:`Point`): Vector direction vector.
+            origin_point (:obj:`Point`): Vector origin point.
+            angle (float): Vector angle from the origin point, in radians.
+            direction_vector (:obj:`Point`): Vector direction vector.
     """
     def __init__(self, origin, angle):
         self.origin_point = origin
@@ -17,16 +17,16 @@ class UnitVector:
         self.direction_vector = Point(cos(self.angle), sin(self.angle))
 
 
-    def draw(self, window, lenght=1, color=(255,255,255)):
+    def draw(self, window, length=1, color=(255, 255, 255)):
         """ Draws the vector in the pygame game window.
 
             Args:
-                window(:obj:`Surface`:): Pygame window surface.
-                lenght(int): Vector display lenght.
-                color(:obj:`List`:): Line color as list of rgb colors.
+                window (:obj:`Surface`:): Pygame window surface.
+                length (int): Vector display length.
+                color (:obj:`List`:): Line color as list of rgb colors.
         """
-        x_offset = self.direction_vector.x * lenght
-        y_offset = self.direction_vector.y * lenght
+        x_offset = self.direction_vector.x * length
+        y_offset = self.direction_vector.y * length
         head_point = (self.origin_point.x+x_offset, self.origin_point.y+y_offset)
         pygame.draw.line(window, color, self.origin_point.get_int_tuple(), head_point)
         self.origin_point.draw(window, color, 3)
