@@ -1,10 +1,10 @@
 import pygame
-import math
+from math import radians, degrees
 from point import Point
 from sonar import Sonar
 from line_segment import LineSegment
 from unit_vector import UnitVector
-from monter_ray_generator import MonterRayGenerator
+from ray_generator import RayGenerator
 from ray import Ray
 from echo_pixel import EchoPixel
 
@@ -20,22 +20,38 @@ line_obstacles = [LineSegment(Point(150, 150), Point(350, 150)), LineSegment(Poi
 reflected_vector = None
 
 
-def get_generated_echo_pixel(ray, sonar, line_obstacles):
-    #if ray.traveled_distance > 0 and sonar.sonar_collision(ray.vector):
-    if sonar.sonar_collision(ray.vector):
+def get_nearest_intersected_line(vector, line_obstacles):
+    nearest_intersected_obstacle = None
+    smallest_intersection_distance = float('inf')
+
+    for line_obstacle in line_obstacles:
+        reflection_point = line_obstacle.get_intersection_point(vector)
+        if reflection_point is not None and reflection_point != vector.origin_point:
+
+            distance_to_reflection = vector.origin_point.get_distance_to(reflection_point)
+            if distance_to_reflection < smallest_intersection_distance:
+                nearest_intersected_obstacle = line_obstacle
+                smallest_intersection_distance = distance_to_reflection
+    return nearest_intersected_obstacle
+
+
+def generate_echo_pixels(source_ray, sonar, line_obstacles, echo_pixels):
+    if source_ray.bounces > 8:
+        return None
+
+    if sonar.sonar_collision(source_ray.vector):
         print("sonar collision!")
         return EchoPixel(255, Point(50, 50))
 
-    reflection_point = None
-    for line_obstacle in line_obstacles:
-        reflection_point = line_obstacle.get_intersection_point(ray.vector)
-        if reflection_point is not None:
-            break
+    intersected_line = get_nearest_intersected_line(source_ray.vector, line_obstacles)
+    ray_bounced = (intersected_line is not None)
+    if ray_bounced:
+        reflected_ray = RayGenerator().get_reflected_ray(source_ray, intersected_line)
+        if reflected_ray.energy > 0:
+            print("bounce " + str(reflected_ray.bounces) + ' ' + str(reflected_ray))
+            echo_pixels.append(EchoPixel(255, reflected_ray.vector.origin_point))
 
-    if reflection_point is not None:
-        print("reflection!")
-        return
-
+            generate_echo_pixels(reflected_ray, sonar, line_obstacles, echo_pixels)
     return None
 
 
@@ -52,7 +68,6 @@ def redraw_window():
     for echo_pixel in echo_pixels:
         echo_pixel.draw(window)
     pygame.display.update()
-
 
 run = True
 while run:
@@ -73,29 +88,8 @@ while run:
         left_mouse_click = (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1)
         if left_mouse_click:
                 sonar_ray_vector = UnitVector(center_point, center_point.get_angle_to(mouse_point))
-                sonar_ray = Ray(sonar_ray_vector.angle, sonar_ray_vector)
+                sonar_ray = Ray(degrees(sonar_ray_vector.angle), sonar_ray_vector)
 
-                echo_pixel = get_generated_echo_pixel(sonar_ray, sonar, line_obstacles)
-                if echo_pixel is not None:
-                    echo_pixels.append(echo_pixel)
-
-                """for line_obstacle in line_obstacles:
-                    reflection_point = line_obstacle.get_intersection_point(sonar_ray)
-                    if reflection_point is not None:
-                        reflected_vector = line_obstacle.get_reflected_vector(reflection_point, sonar_ray)
-
-                        sonar.sonar_collision(reflected_vector) # test stuff
-                        angle_range = line_segment.get_reflection_angle_range(reflection_point, sonar_ray)
-                        print("Reflection angle range: (", math.degrees(angle_range.min), ", ", math.degrees(angle_range.max), ")")
-
-                        sonar_view_angle_range = sonar.get_view_angle_range()
-                        print("Sonar view angle range: (", math.degrees(sonar_view_angle_range.min), ", ", math.degrees(sonar_view_angle_range.max), ")")
-                         
-                        monte=MonterRayGenerator()
-                        initial_rays=monte.get_initial_sonar_rays(sonar.center_point,sonar_view_angle_range)
-                        print("Rayo principal: ")
-                        initial_rays[0].__str__()
-                        print("Rayos de foco: ")
-                        monte.get_spotlight_rays(initial_rays[0],0)"""
-
-
+                print("")
+                echo_pixels = []
+                generate_echo_pixels(sonar_ray, sonar, line_obstacles, echo_pixels)

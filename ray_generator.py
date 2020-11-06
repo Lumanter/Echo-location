@@ -6,12 +6,12 @@ from unit_vector import UnitVector
 from angle_range import AngleRange
 
 
-class MonterRayGenerator:
+class RayGenerator:
     def __init__(self):
         self.initial_rays = 5         #or main rays
         self.spotlight_rays = 5
         self.spotlight_range = 10
-        self.lost_rate = 0.5
+        self.energy_loss_per_degree = 0.5
        
 
     def get_initial_sonar_rays(self,sonar_point,range_angle):
@@ -86,6 +86,34 @@ class MonterRayGenerator:
         return rays
 
 
+    def get_degrees_difference(self, angle_a, angle_b):
+        between_first_and_fourth_quadrant = (angle_a < 90 and angle_b > 270 or angle_b < 90 and angle_a > 270)
+        if between_first_and_fourth_quadrant:
+            angle_a = (360 - angle_a) if (angle_a > 270) else angle_a # adjust the over 270 angle
+            angle_b = (360 - angle_b) if (angle_b > 270) else angle_b
+            return angle_a + angle_b
+        else:
+            return abs(angle_a - angle_b)
+
+
+    def get_ray_energy_with_loss(self, source_energy, source_degrees, ray_degrees):
+        degrees_difference = self.get_degrees_difference(source_degrees, ray_degrees)
+        return source_energy - degrees_difference * self.energy_loss_per_degree
+
+
+    def get_reflected_ray(self, source_ray, line_segment):
+        reflection_point = line_segment.get_intersection_point(source_ray.vector)
+        reflected_vector = line_segment.get_reflected_vector(reflection_point, source_ray.vector)
+        traveled_distance = source_ray.traveled_distance + reflection_point.get_distance_to(source_ray.vector.origin_point)
+        bounces = source_ray.bounces + 1
+
+        degrees_from_reflection_point_to_source_ray_origin = degrees(reflected_vector.origin_point.get_angle_to(source_ray.vector.origin_point))
+        energy = self.get_ray_energy_with_loss(source_ray.energy, degrees_from_reflection_point_to_source_ray_origin, degrees(reflected_vector.angle))
+
+        reflected_ray = Ray(source_ray.angle_from_sonar, reflected_vector, energy, traveled_distance, bounces)
+        return reflected_ray
+
+
     def get_secondary_ray_energy(self,primary_ray, angle):
         """Calculate the energy of a secondary ray using the information from a primary ray as a basis
             Args:
@@ -94,4 +122,5 @@ class MonterRayGenerator:
             Returns:
                 int: energy for secondary ray in radians
         """
-        return primary_ray.energy - abs(primary_ray.vector.angle - angle)*self.lost_rate
+        angles_degrees_difference = self.get_degrees_difference(degrees(primary_ray.vector.angle), degrees(angle))
+        return primary_ray.energy - angles_degrees_difference * self.energy_loss_per_degree

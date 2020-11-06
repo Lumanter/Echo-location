@@ -1,6 +1,7 @@
 import pygame
 import math
 from point import Point
+from math import cos, sin, degrees
 
 class UnitVector:
     """ Unit vector representation.
@@ -13,7 +14,7 @@ class UnitVector:
     def __init__(self, origin, angle):
         self.origin_point = origin
         self.angle = angle
-        self.direction_vector = Point(math.cos(self.angle), math.sin(self.angle))
+        self.direction_vector = Point(cos(self.angle), sin(self.angle))
 
 
     def draw(self, window, lenght=1, color=(255,255,255)):
@@ -43,5 +44,10 @@ class UnitVector:
         proy=vector.dot_product(self.direction_vector)/(math.sqrt(self.direction_vector.get_x()**2 + self.direction_vector.get_y()**2))
         return Point(proy*self.direction_vector.get_x(), proy*self.direction_vector.get_y()).__add__(self.origin_point)
 
+
+    def __str__(self):
+        return "<{}, {}°>".format(str(self.origin_point), str(int(degrees(self.angle))))
+
+
     def __repr__(self):
-        return '('+str(self.origin_point) +', '+ str(self.angle)+')'
+        return self.__str__()

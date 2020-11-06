@@ -104,8 +104,13 @@ class Point:
 
 
     def __str__(self):
-        return str((self.x, self.y))
+        x, y = self.get_int_tuple()
+        return '({}x, {}y)'.format(x, y)
 
 
     def __repr__(self):
         return self.__str__()
+
+
+    def __eq__(self, point):
+        return self.x == point.x and self.y == point.y
