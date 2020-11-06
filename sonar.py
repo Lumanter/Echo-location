@@ -17,7 +17,7 @@ class Sonar:
             field_of_view_points(:obj:`list` of :obj:`list`): Sonar field of view points used for display.
             view_line(:obj:`LineSegment`): Sonar view line.
     """
-    def __init__(self, center_point, radius=12, view_angle_range=radians(80)):
+    def __init__(self, center_point, radius = 15, view_angle_range = radians(60)):
         self.center_point = center_point
         self.radius = radius
         self.view_angle = view_angle_range
@@ -87,7 +87,7 @@ class Sonar:
             vector_ori_c = self.center_point.__sub__(vector.get_origin_point())
             point_closest = vector.projection(vector_ori_c)
             dis = self.center_point.get_distance_to(point_closest)
-            return dis<self.radius
+            return dis < self.radius
         return False
 
 

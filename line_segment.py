@@ -104,6 +104,31 @@ class LineSegment:
                 return AngleRange(radians(180), radians(359))
 
 
+    @staticmethod
+    def get_nearest_intersected_line(vector, line_segments):
+        """ Returns the the nearest line segment intersected by a vector
+
+            Args:
+                vector(:obj:`UnitVector`): Vector to be check intersection.
+                line_segments(:obj:`list` of :obj:`LineSegment`): List of segments to check intersections.
+
+            Returns:
+                :obj:`LineSegment`: Nearest intersected line segment if there is intersection, None otherwise.
+        """
+        nearest_intersected_line = None
+        smallest_intersection_distance = float('inf')
+
+        for line_segment in line_segments:
+            reflection_point = line_segment.get_intersection_point(vector)
+            if reflection_point is not None and reflection_point != vector.origin_point:
+
+                distance_to_reflection = vector.origin_point.get_distance_to(reflection_point)
+                if distance_to_reflection < smallest_intersection_distance:
+                    nearest_intersected_line = line_segment
+                    smallest_intersection_distance = distance_to_reflection
+        return nearest_intersected_line
+
+
     def draw(self, window, color = (0,0,0)):
         """ Draws the line segment in the pygame game window.
 

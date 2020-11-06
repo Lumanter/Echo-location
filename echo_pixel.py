@@ -8,11 +8,15 @@ class EchoPixel:
             display_point(:obj:`Point`): Point to display the pixel.
             display_pixel(:obj:`Surface`:): Pygame surface of the pixel with transparency.
     """
-    def __init__(self, transparency, display_point):
+    def __init__(self, energy, display_point):
         self.display_point = display_point
         size = 5
         self.display_pixel = pygame.Surface((size, size))
+
+        transparency = int((energy/100) * 255)
+        print("transparency: ", transparency)
         self.display_pixel.set_alpha(transparency)
+
         color_white = (255, 255, 255)
         self.display_pixel.fill(color_white)
 
