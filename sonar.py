@@ -116,6 +116,6 @@ class Sonar:
                 window (:obj:`Surface`:): Pygame window surface.
         """
         dark_grey = (45, 45, 45)
-        self.view_line.draw(window, dark_grey) # draw view line
+        self.view_line.draw(window, dark_grey, 2) # draw view line
         pygame.draw.polygon(window, dark_grey, self.field_of_view_points) # draw field of view
         pygame.draw.polygon(window, (245, 245, 245), self.triangle_points) # draw triangle sonar

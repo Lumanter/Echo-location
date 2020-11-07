@@ -9,6 +9,7 @@ from ray import Ray
 from echo_pixel import EchoPixel
 import threading
 
+
 screen_width = 700
 screen_height = 700
 window = pygame.display.set_mode((screen_width, screen_height))
@@ -20,16 +21,18 @@ echo_pixels = []
 
 
 def generate_echo_pixels(source_ray, sonar, line_obstacles, echo_pixels):
+    #print("\n~")
     if source_ray.bounces >= 3 or source_ray.energy <= 0:
         return
 
     if sonar.sonar_collision(source_ray.vector):
-        source_ray.traveled_distance += sonar.center_point.get_distance_to(source_ray.vector.origin_point)
-
+        source_ray.traveled_distance += sonar.center_point.get_distance_to(source_ray.vector.origin_point) # update traveled distance for collision
         pixel_energy = RayGenerator.get_energy_with_distance_loss(source_ray.energy, source_ray.traveled_distance)
-        pixel_x, pixel_y = sonar.get_coordinates_around_center(radians(source_ray.angle_from_sonar), int(source_ray.traveled_distance/2))
-        generated_echo_pixel = EchoPixel(pixel_energy, Point(pixel_x, pixel_y))
-        echo_pixels.append(generated_echo_pixel) # add pixel to drawing list
+        if pixel_energy > 0:
+            #print("Pixel: ", source_ray.angle_from_sonar)
+            pixel_x, pixel_y = sonar.get_coordinates_around_center(radians(source_ray.angle_from_sonar), int(source_ray.traveled_distance/2))
+            generated_echo_pixel = EchoPixel(pixel_energy, Point(pixel_x, pixel_y))
+            echo_pixels.append(generated_echo_pixel) # add pixel to drawing list
         return
 
     hit_line = LineSegment.get_nearest_intersected_line(source_ray.vector, line_obstacles)
@@ -42,11 +45,36 @@ def generate_echo_pixels(source_ray, sonar, line_obstacles, echo_pixels):
             generated_rays = [reflected_ray, returning_ray]
 
             reflection_angle_range = hit_line.get_reflection_angle_range(reflected_ray.vector.origin_point, source_ray.vector)
-            secondary_rays = RayGenerator.get_secondary_rays(reflected_ray, reflection_angle_range)
 
+            secondary_rays = RayGenerator.get_secondary_rays(reflected_ray, reflection_angle_range)
             generated_rays.extend(secondary_rays)
+
+            spotlight_rays = []
+            for ray in generated_rays:
+                spotlight_rays.extend(RayGenerator.get_spotlight_rays(ray))
+            generated_rays.extend(spotlight_rays)
+
             for ray in generated_rays:
                 generate_echo_pixels(ray, sonar, line_obstacles, echo_pixels)
+
+
+def shoot_sonar_rays():
+    sonar_ray_vector = UnitVector(center_point, center_point.get_angle_to(mouse_point))
+    main_ray = Ray(degrees(sonar_ray_vector.angle), sonar_ray_vector)
+
+    sonar_view_range = sonar.get_view_angle_range()
+    #print("\n", sonar_view_range)
+    initial_sonar_rays = RayGenerator.get_initial_sonar_rays(sonar.center_point, sonar_view_range)
+    initial_sonar_rays.append(main_ray)
+
+    spotlight_rays = []
+    for ray in initial_sonar_rays:
+        spotlight_rays.extend(RayGenerator.get_spotlight_rays(ray))
+    initial_sonar_rays.extend(spotlight_rays)#"""
+
+    for ray in initial_sonar_rays:
+        #print("Ray: ", ray.angle_from_sonar)
+        generate_echo_pixels(ray, sonar, line_obstacles, echo_pixels)
 
 
 def redraw_window():
@@ -54,13 +82,14 @@ def redraw_window():
     sonar.draw(window)
 
     for line in line_obstacles:
-        line.draw(window, (255, 51, 153))
+        line.draw(window, color=(118, 159, 205), thickness=2)
 
     for echo_pixel in echo_pixels:
         echo_pixel.draw(window)
     pygame.display.update()
 
 
+shoot_rays_thread = None
 run = True
 while run:
     mouse_point = Point(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
@@ -78,15 +107,8 @@ while run:
 
         left_mouse_click = (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1)
         if left_mouse_click:
-                #print("")
-                sonar_ray_vector = UnitVector(center_point, center_point.get_angle_to(mouse_point))
-                main_ray = Ray(degrees(sonar_ray_vector.angle), sonar_ray_vector)
-
-                initial_sonar_rays = RayGenerator.get_initial_sonar_rays(sonar.center_point, sonar.get_view_angle_range())
-                initial_sonar_rays.append(main_ray)
-
-                for ray in initial_sonar_rays:
-                    #t = threading.Thread(target=generate_echo_pixels, args=[ray, sonar, line_obstacles, echo_pixels])
-                    #t.start()
-                    #t.join()
-                    generate_echo_pixels(ray, sonar, line_obstacles, echo_pixels)
+            if shoot_rays_thread is not None:
+                shoot_rays_thread.join() # wait for thread finish
+            shoot_sonar_rays()
+            #shoot_rays_thread = threading.Thread(target=shoot_sonar_rays)
+            #shoot_rays_thread.start()

@@ -17,7 +17,8 @@ class RayGenerator:
                 energy_loss_per_pixel_traveled (float): Amount of energy lost by pixel traveled. Used upon sonar hit to calculate the final energy.
     """
     secondary_rays_number = 2
-    spotlight_rays = 5
+    spotlight_rays = 2
+    spotlight_base_energy_factor = 0.3
     spotlight_degrees_range = 10
     energy_loss_per_degree = 0.2
     energy_loss_per_pixel_traveled = 0.01
@@ -52,31 +53,38 @@ class RayGenerator:
             Returns:
                 :obj:`list` of `Ray`: spotlight rays for the primary ray
         """
-        #Esto va para otro lado, como desde donde llama a esta funcion o una funcion aca, pequennia
-        #saca el rango 
-        vector = primary_ray.vector
-        angle = vector.angle
+        min_angle = degrees(primary_ray.vector.angle) - RayGenerator.spotlight_degrees_range
+        max_angle = degrees(primary_ray.vector.angle) + RayGenerator.spotlight_degrees_range
 
-        max_angle = angle + RayGenerator.spotlight_degrees_range
-        min_angle = angle - RayGenerator.spotlight_degrees_range
+        min_copy = min_angle
+        max_copy = max_angle
 
         min_angle = (360 + min_angle) if (min_angle < 0) else min_angle # adjust negative angle
         max_angle = (max_angle - 360) if (max_angle > 360) else max_angle # adjust over 360 angle
-        print("rango para los rayos de foco: ", max_angle,min_angle)
-        range_angle = AngleRange(radians(min_angle), radians(max_angle))
-        # fin
-        point=vector.origin_point
-        angles=[]
-        rays=[]
-        while len(angles) < RayGenerator.spotlight_rays:
-            current_angle = range_angle.get_random_angle_in_range()
-            if (angle != current_angle and current_angle not in angles):
-                energy = RayGenerator.get_secondary_ray_energy(primary_ray,current_angle)
-                ray=Ray(current_angle, UnitVector(point,current_angle),energy,primary_ray.traveled_distance)
+
+        if min_angle < 0 or max_angle < 0:
+            print("problem")
+            #return []
+
+
+        angle_range = AngleRange(radians(min_angle), radians(max_angle))
+        #print(angle_range)
+
+        sonar_angle = primary_ray.angle_from_sonar
+        base_energy = primary_ray.energy * RayGenerator.spotlight_base_energy_factor
+        distance = primary_ray.traveled_distance
+        bounces = primary_ray.bounces
+        origin_point = primary_ray.vector.origin_point
+
+        rays = []
+        for i in range(RayGenerator.spotlight_rays):
+            ray_angle = angle_range.get_random_angle_in_range()
+            energy = RayGenerator.get_energy_with_degrees_loss(base_energy, degrees(primary_ray.vector.angle), degrees(ray_angle))
+            if energy > 0:
+                ray_vector = UnitVector(origin_point, ray_angle)
+                ray = Ray(sonar_angle, ray_vector, energy, distance, bounces)
                 rays.append(ray)
-                angles.append(current_angle)
-                ray.__str__()
-        return angles
+        return rays
 
 
     @staticmethod
@@ -86,8 +94,9 @@ class RayGenerator:
                 primary_ray (:obj:`Ray`): ray from which the secondary rays come out
                 range_angle (:obj:`AngleRange`): range in radians for secondary angles
             Returns:
-                :obj:`list` of `Ray`: secondary rays 
+                :obj:`list` of `Ray`: secondary rays
         """
+        sonar_from_angle = primary_ray.angle_from_sonar
         rays=[]
         for i in range(RayGenerator.secondary_rays_number):
             angle=range_angle.get_random_angle_in_range()
@@ -95,7 +104,7 @@ class RayGenerator:
             energy = RayGenerator.get_energy_with_degrees_loss(primary_ray.energy, degrees(primary_ray.vector.angle), degrees(angle))
 
             if energy > 0:
-                ray=Ray(degrees(angle), UnitVector(point,angle),energy,primary_ray.traveled_distance)
+                ray=Ray(sonar_from_angle, UnitVector(point,angle),energy,primary_ray.traveled_distance)
                 rays.append(ray)
         return rays
 

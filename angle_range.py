@@ -42,3 +42,7 @@ class AngleRange:
             return radians(random_degrees)
         else:
             return radians(random.randint(min_degrees, max_degrees))
+
+
+    def __str__(self):
+        return '[{}°, {}°]'.format(int(degrees(self.min)), int(degrees(self.max)))

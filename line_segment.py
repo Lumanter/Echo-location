@@ -129,14 +129,14 @@ class LineSegment:
         return nearest_intersected_line
 
 
-    def draw(self, window, color = (0,0,0)):
+    def draw(self, window, color=(0,0,0), thickness=1):
         """ Draws the line segment in the pygame game window.
 
             Args:
                 window (:obj:`Surface`:): Pygame window surface.
                 color (:obj:`List`:): Line color as list of rgb colors.
         """
-        pygame.draw.line(window, color, self.pointA.get_int_tuple(), self.pointB.get_int_tuple())
+        pygame.draw.line(window, color, self.pointA.get_int_tuple(), self.pointB.get_int_tuple(), thickness)
 
 
     def __repr__(self):
