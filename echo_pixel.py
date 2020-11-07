@@ -14,7 +14,7 @@ class EchoPixel:
         self.display_pixel = pygame.Surface((size, size))
 
         transparency = int((energy/100) * 255)
-        print("transparency: ", transparency)
+        #print("transparency: ", transparency)
         self.display_pixel.set_alpha(transparency)
 
         color_white = (255, 255, 255)

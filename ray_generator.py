@@ -16,10 +16,10 @@ class RayGenerator:
                 energy_loss_per_degree (float): Amount of energy lost by degree deviation from a reference angle. Used to calculate bounce and secondary ray energy.
                 energy_loss_per_pixel_traveled (float): Amount of energy lost by pixel traveled. Used upon sonar hit to calculate the final energy.
     """
-    initial_sonar_rays = 5
+    secondary_rays_number = 2
     spotlight_rays = 5
     spotlight_degrees_range = 10
-    energy_loss_per_degree = 0.15
+    energy_loss_per_degree = 0.2
     energy_loss_per_pixel_traveled = 0.01
 
 
@@ -35,7 +35,7 @@ class RayGenerator:
                 :obj:`list` of :obj:`Ray`: primary rays
         """
         rays = []
-        for i in range(RayGenerator.initial_sonar_rays):
+        for i in range(RayGenerator.secondary_rays_number):
             angle = range_angle.get_random_angle_in_range()
             ray = Ray(degrees(angle), UnitVector(sonar_point, angle))
             rays.append(ray)
@@ -89,15 +89,32 @@ class RayGenerator:
                 :obj:`list` of `Ray`: secondary rays 
         """
         rays=[]
-        for i in range(RayGenerator.inicial_rays):
+        for i in range(RayGenerator.secondary_rays_number):
             angle=range_angle.get_random_angle_in_range()
             point=primary_ray.vector.origin_point
-            energy = RayGenerator.get_secondary_ray_energy(primary_ray,angle)
+            energy = RayGenerator.get_energy_with_degrees_loss(primary_ray.energy, degrees(primary_ray.vector.angle), degrees(angle))
 
-            ray=Ray(angle,UnitVector(point,angle),energy,primary_ray.traveled_distance)
-            rays.append(ray)
-            #ray.__str__()
+            if energy > 0:
+                ray=Ray(degrees(angle), UnitVector(point,angle),energy,primary_ray.traveled_distance)
+                rays.append(ray)
         return rays
+
+
+    @staticmethod
+    def get_energy_with_degrees_loss(source_energy, source_degrees, ray_degrees):
+        """Returns the energy with loss according to a source energy and angle in degrees.
+           The further the ray angle is from the source, the less energy it will have.
+
+            Args:
+                source_energy (float): Energy of the source ray.
+                source_degrees (float): Angle of the source ray in degrees.
+                ray_degrees (float): Angle of the ray being calculated in degrees.
+
+            Returns:
+                int: Energy of the ray being calculated with loss.
+        """
+        degrees_difference = RayGenerator.get_degrees_difference(source_degrees, ray_degrees)
+        return source_energy - degrees_difference * RayGenerator.energy_loss_per_degree
 
 
     @staticmethod
@@ -122,23 +139,6 @@ class RayGenerator:
 
 
     @staticmethod
-    def get_ray_energy_with_degrees_loss(source_energy, source_degrees, ray_degrees):
-        """Returns the energy with loss according to a source energy and angle in degrees.
-           The further the ray angle is from the source, the less energy it will have.
-
-            Args:
-                source_energy (float): Energy of the source ray.
-                source_degrees (int): Angle of the source ray in degrees.
-                ray_degrees (int): Angle of the ray being calculated in degrees.
-
-            Returns:
-                int: Energy of the ray being calculated with loss.
-        """
-        degrees_difference = RayGenerator.get_degrees_difference(source_degrees, ray_degrees)
-        return source_energy - degrees_difference * RayGenerator.energy_loss_per_degree
-
-
-    @staticmethod
     def get_reflected_ray(source_ray, line_segment):
         """Returns ray reflected from a line segment and a source ray.
 
@@ -146,23 +146,41 @@ class RayGenerator:
                 source_ray (:obj:`Ray`): Ray the hits the line segment.
                 line_segment (:obj:`LineSegment`): Line segment being hit.
 
-                Returns:
-                    int: Energy with distance traveled loss.
-            """
+            Returns:
+                int: Energy with distance traveled loss.
+        """
         reflection_point = line_segment.get_intersection_point(source_ray.vector)
         reflected_vector = line_segment.get_reflected_vector(reflection_point, source_ray.vector)
         traveled_distance = source_ray.traveled_distance + reflection_point.get_distance_to(source_ray.vector.origin_point)
         bounces = source_ray.bounces + 1
 
         degrees_from_reflection_point_to_source_ray_origin = degrees(reflected_vector.origin_point.get_angle_to(source_ray.vector.origin_point))
-        energy = RayGenerator.get_ray_energy_with_degrees_loss(source_ray.energy, degrees_from_reflection_point_to_source_ray_origin, degrees(reflected_vector.angle))
+        energy = RayGenerator.get_energy_with_degrees_loss(source_ray.energy, degrees_from_reflection_point_to_source_ray_origin, degrees(reflected_vector.angle))
 
         reflected_ray = Ray(source_ray.angle_from_sonar, reflected_vector, energy, traveled_distance, bounces)
         return reflected_ray
 
+    @staticmethod
+    def get_returning_reflected_ray(reflected_ray, source_ray):
+        """Returns the ray that returns in the direction of a source ray after a ray reflection.
+           On each reflection this ray is always created.
+
+            Args:
+                reflected_ray (:obj:`Ray`): Ray reflected from the source ray hitting the line segment.
+                source_ray (:obj:`Ray`): Ray the hits the line segment.
+
+            Returns:
+                :obj:`Ray`: Ray going from the reflection point to the source ray origin direction.
+        """
+        angle = (reflected_ray.vector.origin_point).get_angle_to(source_ray.vector.origin_point)
+        energy = RayGenerator.get_energy_with_degrees_loss(reflected_ray.energy, degrees(angle), degrees(reflected_ray.vector.angle))
+        vector = UnitVector(reflected_ray.vector.origin_point, angle)
+        returning_ray = Ray(source_ray.angle_from_sonar, vector, energy, reflected_ray.traveled_distance, reflected_ray.bounces)
+        return returning_ray
+
 
     @staticmethod
-    def get_ray_energy_with_distance_loss(source_energy, traveled_distance):
+    def get_energy_with_distance_loss(source_energy, traveled_distance):
         """Returns the energy with loss according to the distance traveled by a ray.
            The larger the distance, the smaller the energy.
 
