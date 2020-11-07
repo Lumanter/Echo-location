@@ -68,14 +68,12 @@ class LineSegment:
         """
         if self.is_vertical():
             vector_comes_from_below = (reflection_point.y > vector.origin_point.y)
-            if vector_comes_from_below:
+            if vector_comes_from_below or vector.angle == 0 or vector.angle == radians(180):
                 reflection_angle = radians(180) - vector.angle
             else:
                 reflection_angle = radians(540) - vector.angle
         else:
             reflection_angle = radians(360) - vector.angle
-            degrees_vector = degrees(vector.angle)
-            degrees_reflection = degrees(reflection_angle)
         reflected_vector = UnitVector(reflection_point, reflection_angle)
         return reflected_vector
 
