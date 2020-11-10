@@ -17,6 +17,10 @@ center_point = Point(int(screen_width / 2), int(screen_height / 2))
 
 sonar = Sonar(center_point)
 line_obstacles = [LineSegment(Point(250, 250), Point(450, 250)), LineSegment(Point(250, 450), Point(450, 450)), LineSegment(Point(250, 250), Point(250, 450)), LineSegment(Point(450, 250), Point(450, 450))]
+#line_obstacles = [LineSegment(Point(210, 400), Point(210, 450)),LineSegment(Point(210, 250), Point(210, 300)),LineSegment(Point(500, 400), Point(500, 450)),LineSegment(Point(500, 250),Point(500, 300)),LineSegment(Point(100, 200), Point(100, 500)),LineSegment(Point(600, 200), Point(600, 500)),LineSegment(Point(100, 100), Point(600, 100)),LineSegment(Point(100, 600), Point(600, 600))]
+#line_obstacles = [LineSegment(Point(150, 200), Point(150, 500)), LineSegment(Point(400, 250), Point(400, 400)), LineSegment(Point(350, 400), Point(450, 400)), LineSegment(Point(250, 550), Point(345, 550)), LineSegment(Point(100, 550), Point(200, 550)), LineSegment(Point(100, 150), Point(400, 150)), LineSegment(Point(420, 150), Point(420, 200))]
+
+
 echo_pixels = []
 
 
