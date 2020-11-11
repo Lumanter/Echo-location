@@ -11,10 +11,12 @@ class LineSegment:
         Attributes:
             pointA (:obj:`Point`): First line point.
             pointB (:obj:`Point`): Second line point.
+            sound_absorption (float): Sound absorption coefficient that indicates how much sound the lines absorbs.
     """
-    def __init__(self, pointA, pointB):
+    def __init__(self, pointA, pointB, sound_absorption=0.0):
         self.pointA = pointA
         self.pointB = pointB
+        self.sound_absorption = sound_absorption
 
 
     def get_intersection_point(self, vector):
@@ -128,13 +130,27 @@ class LineSegment:
         return nearest_intersected_line
 
 
-    def draw(self, window, color=(0,0,0), thickness=1):
+    def get_energy_with_absorption_loss(self, energy):
+        """ Returns the energy of a ray adjusted with the energy absorbed by the line.
+
+            Args:
+                energy (float): Energy to be apply absorption adjustment.
+
+                Returns:
+                float: Adjusted ray energy.
+            """
+        return energy - energy * self.sound_absorption
+
+
+    def draw(self, window, thickness=3):
         """ Draws the line segment in the pygame game window.
 
             Args:
                 window (:obj:`Surface`:): Pygame window surface.
-                color (:obj:`List`:): Line color as list of rgb colors.
+                thickness (int): Thickness of the line.
         """
+        color_absorption_brightness = int(205 * self.sound_absorption) # 0 to 155
+        color = (0, 50 + color_absorption_brightness, 50 + color_absorption_brightness)
         pygame.draw.line(window, color, self.pointA.get_int_tuple(), self.pointB.get_int_tuple(), thickness)
 
 

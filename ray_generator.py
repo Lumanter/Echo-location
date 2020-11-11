@@ -156,7 +156,9 @@ class RayGenerator:
         bounces = source_ray.bounces + 1
 
         degrees_from_reflection_point_to_source_ray_origin = degrees(reflected_vector.origin_point.get_angle_to(source_ray.vector.origin_point))
-        energy = RayGenerator.get_energy_with_degrees_loss(source_ray.energy, degrees_from_reflection_point_to_source_ray_origin, degrees(reflected_vector.angle))
+
+        energy = line_segment.get_energy_with_absorption_loss(source_ray.energy)
+        energy = RayGenerator.get_energy_with_degrees_loss(energy, degrees_from_reflection_point_to_source_ray_origin, degrees(reflected_vector.angle))
 
         reflected_ray = Ray(source_ray.angle_from_sonar, reflected_vector, energy, traveled_distance, bounces)
         return reflected_ray
