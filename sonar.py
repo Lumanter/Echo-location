@@ -1,8 +1,6 @@
 import pygame
-from math import cos, sin, radians, pi, degrees
+from math import cos, sin, radians, degrees
 from point import Point
-from unit_vector import UnitVector
-import numpy as np
 from angle_range import AngleRange
 from line_segment import LineSegment
 
@@ -13,21 +11,22 @@ class Sonar:
             center_point (:obj:`Point`): Sonar center point.
             radius (int): Sonar radius used for display and collision detection.
             view_angle (int): Sonar view angle, used when sound rays are emitted.
+            view_line (:obj:`LineSegment`): Sonar view line.
+            rotation_angle (float): Sonar rotation angle, in radians.
             triangle_points (:obj:`list` of :obj:`list`): Sonar triangle points used for display.
             field_of_view_points (:obj:`list` of :obj:`list`): Sonar field of view points used for display.
-            view_line (:obj:`LineSegment`): Sonar view line.
     """
-    def __init__(self, center_point, radius = 15, view_angle_range = radians(60)):
+    def __init__(self, center_point, radius = 15, view_angle_range = radians(15)):
         self.center_point = center_point
         self.radius = radius
         self.view_angle = view_angle_range
-
-        self.triangle_points = None
-        self.rotation_angle = 0
-        self.update_triangle_points()
-        self.field_of_view_points = None
-        self.update_field_of_view_points()
         self.view_line = LineSegment(self.center_point, self.center_point)
+
+        self.rotation_angle = 0
+        self.triangle_points = None
+        self.field_of_view_points = None
+        self.update_triangle_points()
+        self.update_field_of_view_points()
 
 
     def update_rotation(self, mouse_point):
@@ -82,7 +81,15 @@ class Sonar:
         return x, y
 
 
-    def sonar_collision(self, vector):
+    def collides(self, vector):
+        """ Indicates if a vector collides with the sonar.
+
+            Args:
+                vector (:obj:`UnitVector`): Vector to check collision.
+
+            Returns:
+                bool: True if collides, false otherwise.
+        """
         if self.center_point.get_x() != vector.get_origin_point().get_x() and self.center_point.get_y() != vector.get_origin_point().get_y():
             vector_ori_c = self.center_point.__sub__(vector.get_origin_point())
             point_closest = vector.projection(vector_ori_c)

@@ -19,6 +19,7 @@ class LineSegment:
 
     def get_intersection_point(self, vector):
         """ Returns the intersection point between the line and a given vector.
+            Adaptation of Yuen Law's raySegmentIntersect function: https://github.com/yuenlw/2DRaytracer/blob/master/rt.py
 
             Args:
                 vector (:obj:`UnitVector`): Vector to check intersection.

@@ -4,6 +4,7 @@ import math
 class Point:
     """ Point representation.
 
+
         Attributes:
             x (float): X axis point.
             y (float): Y axis point.
@@ -40,37 +41,28 @@ class Point:
         return math.sqrt((self.x - point.get_x()) ** 2 + (self.y - point.get_y()) ** 2)
 
 
-    def get_int_tuple(self):
-        """ Returns point as a tuple of integers
-
-            Returns:
-                :obj:`list` of int: Tuple of integers.
-        """
-        return int(self.x), int(self.y)
-
-
-    def dot_product(self, point):
+    def dot_product(self, other):
         """ Returns the dot product between this point and another.
 
             Args:
-                point (:obj:`Point`): Another point.
+                other (:obj:`Point`): Another point.
 
             Returns:
                 float: Dot product result.
         """
-        return (self.x * point.x) + (self.y * point.y)
+        return (self.x * other.x) + (self.y * other.y)
 
 
-    def cross_product(self, point):
+    def cross_product(self, other):
         """ Returns the cross product between this point and another.
 
             Args:
-                point (:obj:`Point`): Another point.
+                other (:obj:`Point`): Another point.
 
             Returns:
                 float: Cross product result.
         """
-        return (self.x * point.y) - (self.y * point.x)
+        return (self.x * other.y) - (self.y * other.x)
 
 
     def __add__(self, other):
@@ -88,8 +80,22 @@ class Point:
     def get_x(self):
         return self.x
 
+
     def get_y(self):
         return self.y
+
+
+    def __eq__(self, point):
+        return self.x == point.x and self.y == point.y
+
+
+    def get_int_tuple(self):
+        """ Returns point as a tuple of integers
+
+            Returns:
+                :obj:`list` of int: Tuple of integers.
+        """
+        return int(self.x), int(self.y)
 
 
     def draw(self, window, color=(255, 255, 255), radius=4):
@@ -110,7 +116,3 @@ class Point:
 
     def __repr__(self):
         return self.__str__()
-
-
-    def __eq__(self, point):
-        return self.x == point.x and self.y == point.y
