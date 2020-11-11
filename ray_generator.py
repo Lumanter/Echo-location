@@ -15,7 +15,7 @@ class RayGenerator:
                 energy_loss_per_degree (float): Amount of energy lost by degree deviation from a reference angle. Used to calculate bounce and secondary ray energy.
                 energy_loss_per_pixel_traveled (float): Amount of energy lost by pixel traveled. Used upon sonar hit to calculate the final energy.
     """
-    secondary_rays_number = 5
+    secondary_rays_number = 15
     spotlight_rays = 10
     spotlight_base_energy_factor = 0.2
     spotlight_degrees_range = 10

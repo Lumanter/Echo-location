@@ -115,20 +115,30 @@ def run_main():
     sonar = Sonar(center_point) # sonar that shoot sound waves
     echo_pixels = [] # list of displayed echo pixels
 
-    map_1 = [LineSegment(Point(250, 250), Point(450, 250), 0.4), LineSegment(Point(250, 450), Point(450, 450)), LineSegment(Point(250, 250), Point(250, 450), 1.0), LineSegment(Point(450, 250), Point(450, 450))]
+    map_1 = [LineSegment(Point(250, 250), Point(450, 250), 0.4), LineSegment(Point(250, 450), Point(450, 450)), LineSegment(Point(250, 250), Point(250, 450), 0.8), LineSegment(Point(450, 250), Point(450, 450))]
     map_2 = [LineSegment(Point(210, 400), Point(210, 450), 1),LineSegment(Point(210, 250), Point(210, 300)),LineSegment(Point(500, 400), Point(500, 450), 0.5),LineSegment(Point(500, 250),Point(500, 300)),LineSegment(Point(100, 200), Point(100, 500), 0.1),LineSegment(Point(600, 200), Point(600, 500)),LineSegment(Point(100, 100), Point(600, 100), 0.3),LineSegment(Point(100, 600), Point(600, 600))]
-    map_3 = [LineSegment(Point(150, 200), Point(150, 500),0.1), LineSegment(Point(400, 250), Point(400, 400)), LineSegment(Point(350, 400), Point(450, 400)), LineSegment(Point(250, 550), Point(345, 550)), LineSegment(Point(100, 550), Point(200, 550)), LineSegment(Point(100, 150), Point(400, 150)), LineSegment(Point(420, 150), Point(420, 200),1)]
+    map_3 = [LineSegment(Point(150, 200), Point(150, 500),0.2), LineSegment(Point(400, 250), Point(400, 400)), LineSegment(Point(350, 400), Point(450, 400)), LineSegment(Point(250, 550), Point(345, 550),1), LineSegment(Point(100, 550), Point(200, 550)), LineSegment(Point(100, 150), Point(400, 150),0.2), LineSegment(Point(420, 150), Point(420, 200),1)]
     maps = [map_1, map_2, map_3] # all maps available
     map_number = 0 # used to change map
     line_obstacles = maps[map_number]
 
-    shoot_rays_thread = None # thread in charge of bouncing the sound rays
+    wave_threads = []
     run = True
     while run:
         mouse_point = Point(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
         sonar.update_rotation(mouse_point)
-
         redraw_window(window, sonar, line_obstacles, echo_pixels)
+
+        dead_threads_indexes = []  # join/kill inactive wave threads
+        for index, thread in enumerate(wave_threads):
+            if not thread.is_alive():
+                thread.join()
+                dead_threads_indexes.insert(0, index)
+        for dead_thread_index in dead_threads_indexes:
+            wave_threads.pop(dead_thread_index)
+        for t in wave_threads: # print active wave threads
+            print("T", end='')
+        print("")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -147,10 +157,9 @@ def run_main():
 
             shoot_sound_rays = (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1)
             if shoot_sound_rays: # left mouse click
-                if shoot_rays_thread is not None:
-                    shoot_rays_thread.join() # wait for thread to finish before shooting another wave
-                shoot_rays_thread = threading.Thread(target=shoot_sonar_rays, args=[mouse_point, sonar, line_obstacles, echo_pixels])
-                shoot_rays_thread.start()
+                wave_thread = threading.Thread(target=shoot_sonar_rays, args=[mouse_point, sonar, line_obstacles, echo_pixels])
+                wave_thread.start()
+                wave_threads.append(wave_thread)
 
 
 if __name__ == "__main__":
